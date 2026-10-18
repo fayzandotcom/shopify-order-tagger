@@ -48,3 +48,19 @@ model Rule {
 
   @@index([shop])
 }
+
+// An order the app tagged, for the activity list. No customer details.
+// tags and matchedRules are JSON arrays: tags as strings, matchedRules as
+// { id, condition, tag } snapshots so they survive the rule being edited or deleted.
+model TaggedOrder {
+  id           Int      @id @default(autoincrement())
+  shop         String
+  orderId      String
+  orderName    String
+  tags         String
+  matchedRules String
+  createdAt    DateTime @default(now())
+
+  @@unique([shop, orderId])
+  @@index([shop, createdAt])
+}
