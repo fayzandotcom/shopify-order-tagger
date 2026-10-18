@@ -49,3 +49,84 @@ export function validateRule(rule: RuleInput): string[] {
 
   return errors;
 }
+
+// The order data rules are evaluated against. The webhook handler builds this
+// from the order payload plus the tags of the products in the order.
+export interface OrderFacts {
+  total: number;
+  productTags: string[];
+  discountCodes: string[];
+}
+
+export interface EvaluableRule extends RuleInput {
+  enabled: boolean;
+}
+
+export interface Evaluation<R extends EvaluableRule> {
+  // Tags to add to the order, without duplicates.
+  tags: string[];
+  // Rules that matched, so callers can record which rule added which tag.
+  matchedRules: R[];
+}
+
+// Returns the enabled rules that match the order and the tags they add.
+// Rules with an unknown field or operator never match.
+export function evaluateRules<R extends EvaluableRule>(
+  order: OrderFacts,
+  rules: R[],
+): Evaluation<R> {
+  const matchedRules = rules.filter(
+    (rule) => rule.enabled && ruleMatches(order, rule),
+  );
+
+  const tags: string[] = [];
+  const seen = new Set<string>();
+  for (const rule of matchedRules) {
+    const tag = rule.tag.trim();
+    if (!seen.has(tag.toLowerCase())) {
+      seen.add(tag.toLowerCase());
+      tags.push(tag);
+    }
+  }
+
+  return { tags, matchedRules };
+}
+
+function ruleMatches(order: OrderFacts, rule: RuleInput): boolean {
+  const value = rule.value.trim();
+
+  switch (rule.field) {
+    case "orderTotal":
+      return compareTotal(order.total, rule.operator, Number(value));
+    case "productTag":
+      return rule.operator === "contains" && includesIgnoringCase(order.productTags, value);
+    case "discountCode":
+      return rule.operator === "eq" && includesIgnoringCase(order.discountCodes, value);
+    default:
+      return false;
+  }
+}
+
+function compareTotal(total: number, operator: string, value: number): boolean {
+  if (!Number.isFinite(value)) return false;
+
+  switch (operator) {
+    case "gt":
+      return total > value;
+    case "gte":
+      return total >= value;
+    case "lt":
+      return total < value;
+    case "lte":
+      return total <= value;
+    case "eq":
+      return total === value;
+    default:
+      return false;
+  }
+}
+
+function includesIgnoringCase(values: string[], target: string): boolean {
+  const lowerTarget = target.toLowerCase();
+  return values.some((value) => value.trim().toLowerCase() === lowerTarget);
+}
