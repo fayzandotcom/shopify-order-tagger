@@ -13,6 +13,38 @@ export const RULE_OPERATORS = {
 export type RuleField = keyof typeof RULE_OPERATORS;
 export type RuleOperator = (typeof RULE_OPERATORS)[RuleField][number];
 
+// Each field + operator pair as merchants see it. The rules form offers these
+// as one "Condition" choice, so the operator always fits the field.
+export const RULE_CONDITIONS: {
+  field: RuleField;
+  operator: RuleOperator;
+  label: string;
+  symbol: string;
+}[] = [
+  { field: "orderTotal", operator: "gt", label: "Order total is greater than", symbol: ">" },
+  { field: "orderTotal", operator: "gte", label: "Order total is at least", symbol: "≥" },
+  { field: "orderTotal", operator: "lt", label: "Order total is less than", symbol: "<" },
+  { field: "orderTotal", operator: "lte", label: "Order total is at most", symbol: "≤" },
+  { field: "orderTotal", operator: "eq", label: "Order total equals", symbol: "=" },
+  { field: "productTag", operator: "contains", label: "Order has a product tagged", symbol: "has" },
+  { field: "discountCode", operator: "eq", label: "Discount code used is", symbol: "=" },
+];
+
+const FIELD_NAMES: Record<RuleField, string> = {
+  orderTotal: "Order total",
+  productTag: "Product tag",
+  discountCode: "Discount code",
+};
+
+// A short description of a rule's condition, e.g. "Order total > 100".
+export function describeCondition(rule: Pick<RuleInput, "field" | "operator" | "value">): string {
+  const condition = RULE_CONDITIONS.find(
+    (c) => c.field === rule.field && c.operator === rule.operator,
+  );
+  if (!condition) return `${rule.field} ${rule.operator} ${rule.value}`;
+  return `${FIELD_NAMES[condition.field]} ${condition.symbol} ${rule.value}`;
+}
+
 export interface RuleInput {
   field: string;
   operator: string;
