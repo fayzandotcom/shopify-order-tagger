@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  RULE_CONDITIONS,
+  RULE_OPERATORS,
+  describeCondition,
   evaluateRules,
   validateRule,
   type EvaluableRule,
@@ -217,5 +220,32 @@ describe("validateRule", () => {
     expect(
       validateRule({ field: "discountCode", operator: "eq", value: " ", tag: "" }),
     ).toEqual(["Value is required.", "Tag is required."]);
+  });
+});
+
+describe("RULE_CONDITIONS", () => {
+  it("offers every allowed field and operator exactly once", () => {
+    const offered = RULE_CONDITIONS.map((c) => `${c.field}:${c.operator}`);
+    const allowed = Object.entries(RULE_OPERATORS).flatMap(([field, operators]) =>
+      operators.map((operator) => `${field}:${operator}`),
+    );
+    expect(offered.sort()).toEqual(allowed.sort());
+  });
+});
+
+describe("describeCondition", () => {
+  it.each([
+    [{ field: "orderTotal", operator: "gt", value: "100" }, "Order total > 100"],
+    [{ field: "orderTotal", operator: "lte", value: "50" }, "Order total ≤ 50"],
+    [{ field: "productTag", operator: "contains", value: "Winter" }, "Product tag has Winter"],
+    [{ field: "discountCode", operator: "eq", value: "TEST10" }, "Discount code = TEST10"],
+  ])("describes %o as %s", (rule, expected) => {
+    expect(describeCondition(rule)).toBe(expected);
+  });
+
+  it("falls back to the raw values for an unknown condition", () => {
+    expect(describeCondition({ field: "customerEmail", operator: "eq", value: "x" })).toBe(
+      "customerEmail eq x",
+    );
   });
 });

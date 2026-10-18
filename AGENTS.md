@@ -27,7 +27,8 @@ The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayza
 
 ### UI
 
-- Use Polaris for all UI. Which Polaris flavor to use (web components or React) is decided at Milestone 3; until then, follow what the template uses.
+- Use Polaris web components (`<s-page>`, `<s-table>` and so on), loaded by the template from Shopify's CDN. Don't add Polaris React (`@shopify/polaris`), which Shopify is phasing out.
+- The app is on React 18, which doesn't support controlled Polaris fields. Use uncontrolled fields in a native form (or a React Router `<Form>`), with a `name` on every field, and read the values from the form data on the server.
 
 ### Data
 
