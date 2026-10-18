@@ -32,3 +32,19 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+// A tagging rule: when an order matches the condition (field, operator, value),
+// the tag is added to it. Allowed fields and operators are in app/rules.ts.
+model Rule {
+  id        Int      @id @default(autoincrement())
+  shop      String
+  field     String
+  operator  String
+  value     String
+  tag       String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shop])
+}
