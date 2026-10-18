@@ -1,6 +1,7 @@
 import type { AdminApiContext } from "@shopify/shopify-app-react-router/server";
+import type { Rule } from "@prisma/client";
 import db from "./db.server";
-import { evaluateRules, type OrderFacts } from "./rules";
+import { describeCondition, evaluateRules, type OrderFacts } from "./rules";
 
 export interface NewOrder {
   id: string;
@@ -54,14 +55,43 @@ export async function tagOrder(
 
   if (userErrors.length > 0) {
     console.error(`Couldn't tag ${order.name}`, { tags: result.tags, userErrors });
-  } else {
-    console.log(`Tagged ${order.name}`, {
-      tags: result.tags,
-      ruleIds: result.matchedRules.map((rule) => rule.id),
-    });
+    return result;
   }
 
+  console.log(`Tagged ${order.name}`, {
+    tags: result.tags,
+    ruleIds: result.matchedRules.map((rule) => rule.id),
+  });
+  await recordTaggedOrder(shop, order, result.tags, result.matchedRules);
+
   return result;
+}
+
+// Saves the order for the activity list. Upserts, because Shopify can deliver
+// the same webhook more than once.
+async function recordTaggedOrder(
+  shop: string,
+  order: NewOrder,
+  tags: string[],
+  matchedRules: Rule[],
+) {
+  const record = {
+    orderName: order.name,
+    tags: JSON.stringify(tags),
+    matchedRules: JSON.stringify(
+      matchedRules.map((rule) => ({
+        id: rule.id,
+        condition: describeCondition(rule),
+        tag: rule.tag,
+      })),
+    ),
+  };
+
+  await db.taggedOrder.upsert({
+    where: { shop_orderId: { shop, orderId: order.id } },
+    create: { shop, orderId: order.id, ...record },
+    update: record,
+  });
 }
 
 async function fetchProductTags(
