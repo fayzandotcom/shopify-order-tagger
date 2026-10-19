@@ -24,11 +24,10 @@ shopify app init --template=https://github.com/Shopify/shopify-app-template-reac
 
 ### Local Development
 
-The app stores its data in PostgreSQL. For local development, run it in Docker (Docker Desktop must be running):
+The app stores its data in PostgreSQL. For local development, [install PostgreSQL](https://www.postgresql.org/download/) on your machine and create an empty database for the app (for example `order_tagger`, using pgAdmin or `createdb order_tagger`). Then:
 
 ```shell
-cp .env.example .env    # sets DATABASE_URL for the local database
-docker compose up -d    # starts PostgreSQL on localhost:5432
+cp .env.example .env    # then set DATABASE_URL to your local user, password and database
 npx prisma migrate dev  # creates the tables
 ```
 

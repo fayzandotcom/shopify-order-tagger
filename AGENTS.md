@@ -33,7 +33,7 @@ The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayza
 ### Data
 
 - Use PostgreSQL through Prisma, in development and production. Prisma reads the connection string from `DATABASE_URL`.
-- For local development, run PostgreSQL with `docker compose up -d` and copy `.env.example` to `.env`. Never commit `.env`.
+- For local development, use a locally installed PostgreSQL. Copy `.env.example` to `.env` and set `DATABASE_URL` to the local database. Never commit `.env`.
 - Every schema change goes in a Prisma migration committed with the code.
 
 ### Tests
