@@ -32,7 +32,8 @@ The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayza
 
 ### Data
 
-- Use SQLite through Prisma (the template default) for this POC.
+- Use PostgreSQL through Prisma, in development and production. Prisma reads the connection string from `DATABASE_URL`.
+- For local development, run PostgreSQL with `docker compose up -d` and copy `.env.example` to `.env`. Never commit `.env`.
 - Every schema change goes in a Prisma migration committed with the code.
 
 ### Tests
