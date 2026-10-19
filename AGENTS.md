@@ -16,9 +16,17 @@ The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayza
 
 ### Shopify API
 
-- Use Admin API version **2026-10** everywhere: `apiVersion` in `app/shopify.server.ts` and `[webhooks] api_version` in `shopify.app.toml` must match. Change both together or not at all.
+- Use Admin API version **2026-10** everywhere: `apiVersion` in `app/shopify.server.ts` and `[webhooks] api_version` in both app configs must match. Change them together or not at all.
 - Use the **GraphQL** Admin API only. Do not use the REST Admin API.
-- Request the fewest access scopes the app needs, and declare them in `shopify.app.toml`.
+- Request the fewest access scopes the app needs, and declare them in the app configs.
+
+### App configs
+
+- There are two Shopify apps, each with its own config file:
+  - `shopify.app.toml`: **production** (`order-tagger`, shown as "Order Tagger"). Used for `shopify app deploy` and the App Store.
+  - `shopify.app.dev.toml`: **development** (`order-tagger-dev`, shown as "Order Tagger Dev"). Used by `npm run dev`.
+- Never run `shopify app dev` against the production config. It repoints the production app at a local tunnel. `npm run dev` always passes `--config dev`.
+- Keep scopes, webhook subscriptions and `api_version` the same in both files. Only `client_id`, `name` and URLs differ.
 
 ### Customer data
 

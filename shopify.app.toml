@@ -1,3 +1,4 @@
+# Production app (order-tagger). For local development use shopify.app.dev.toml (`npm run dev`).
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "cac2d21ff57d49b43885942dd28299b1"

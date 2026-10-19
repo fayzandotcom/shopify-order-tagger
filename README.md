@@ -35,8 +35,10 @@ npx prisma migrate dev  # creates the tables
 Then start the app:
 
 ```shell
-shopify app dev
+npm run dev
 ```
+
+`npm run dev` runs `shopify app dev --config dev`, which uses the development app (`order-tagger-dev`, configured in `shopify.app.dev.toml`). The production app (`order-tagger`) is configured in `shopify.app.toml` and is only used for deploys. Don't run `shopify app dev` without `--config dev`, because that would point the production app at your local tunnel.
 
 Press P to open the URL to your app. Once you click install, you can start development.
 
