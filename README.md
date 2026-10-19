@@ -24,6 +24,16 @@ shopify app init --template=https://github.com/Shopify/shopify-app-template-reac
 
 ### Local Development
 
+The app stores its data in PostgreSQL. For local development, run it in Docker (Docker Desktop must be running):
+
+```shell
+cp .env.example .env    # sets DATABASE_URL for the local database
+docker compose up -d    # starts PostgreSQL on localhost:5432
+npx prisma migrate dev  # creates the tables
+```
+
+Then start the app:
+
 ```shell
 shopify app dev
 ```
@@ -78,12 +88,11 @@ For more information on the Shopify Dev MCP please read [the documentation](http
 
 ### Application Storage
 
-This template uses [Prisma](https://www.prisma.io/) to store session data, by default using an [SQLite](https://www.sqlite.org/index.html) database.
-The database is defined as a Prisma schema in `prisma/schema.prisma`.
+This app uses [Prisma](https://www.prisma.io/) with a PostgreSQL database for sessions, rules and tagged-order history.
+The database is defined as a Prisma schema in `prisma/schema.prisma`, and Prisma connects to it through the `DATABASE_URL` environment variable.
 
-This use of SQLite works in production if your app runs as a single instance.
-The database that works best for you depends on the data your app needs and how it is queried.
-Here’s a short list of databases providers that provide a free tier to get started:
+In production, set `DATABASE_URL` to a managed PostgreSQL database. The Docker image runs `prisma migrate deploy` on start (`npm run docker-start`).
+Some providers of managed databases:
 
 | Database   | Type             | Hosters                                                                                                                                                                                                                                    |
 | ---------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
