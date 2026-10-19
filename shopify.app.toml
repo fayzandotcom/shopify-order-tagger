@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "cac2d21ff57d49b43885942dd28299b1"
-name = "order-tagger"
+name = "Order Tagger"
 application_url = "https://shopify.dev/apps/default-app-home"
 embedded = true
 
