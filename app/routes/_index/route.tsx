@@ -43,6 +43,10 @@ export default function App() {
             with which tags, and by which rules.
           </li>
         </ul>
+        <p className={styles.text}>
+          <a href="/pricing">Pricing and help</a> ·{" "}
+          <a href="/privacy">Privacy policy</a>
+        </p>
       </div>
     </div>
   );
