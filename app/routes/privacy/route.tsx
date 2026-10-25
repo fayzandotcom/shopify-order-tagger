@@ -4,9 +4,8 @@ import styles from "./styles.module.css";
 
 // Public privacy policy, linked from the App Store listing. Keep it in sync
 // with what the app actually processes and stores (see AGENTS.md).
-// TODO before publishing: confirm OPERATOR and set CONTACT_EMAIL.
-const OPERATOR = "TechCure";
-const CONTACT_EMAIL = "privacy@example.com";
+const DEVELOPER = "Fayzan Siddiqui";
+const CONTACT_EMAIL = "fayzandotcom@hotmail.com";
 const EFFECTIVE_DATE = "October 25, 2026";
 
 export const meta: MetaFunction = () => [{ title: "Privacy policy · Order Tagger" }];
@@ -18,7 +17,7 @@ export default function Privacy() {
       <p className={styles.muted}>Effective {EFFECTIVE_DATE}</p>
 
       <p>
-        Order Tagger (&quot;the app&quot;) is a Shopify app operated by {OPERATOR}
+        Order Tagger (&quot;the app&quot;) is a Shopify app developed and operated by {DEVELOPER}
         (&quot;we&quot;, &quot;us&quot;). It adds tags to new orders in a
         merchant&apos;s Shopify store, based on rules the merchant creates. This
         policy explains what information the app processes, why, and how long
