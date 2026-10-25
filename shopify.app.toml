@@ -25,6 +25,19 @@ api_version = "2026-10"
   uri = "/webhooks/orders/create"
   topics = [ "orders/create" ]
 
+  # Mandatory compliance webhooks (required for the App Store).
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/shop/redact"
+  compliance_topics = [ "shop/redact" ]
+
 [auth]
 redirect_urls = [ "https://shopify-order-tagger.onrender.com/auth/callback" ]
 
