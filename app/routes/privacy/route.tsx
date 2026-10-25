@@ -92,11 +92,10 @@ export default function Privacy() {
           merchant can delete rules at any time in the app.
         </li>
         <li>
-          If a store doesn&apos;t have an active plan (for example, the free
-          trial ended without a subscription), the app stops tagging its
-          orders. We keep the store&apos;s rules and tagging history for 30
-          days, so they&apos;re still there if the merchant subscribes, and then
-          delete them manually.
+          If a store&apos;s plan ends or isn&apos;t started, the app stops
+          tagging its orders. We keep the store&apos;s rules and tagging
+          history for 30 days. If the app is still installed and a paid plan
+          hasn&apos;t been started by then, we delete them.
         </li>
         <li>
           When a merchant uninstalls the app, Shopify asks us 48 hours later to
