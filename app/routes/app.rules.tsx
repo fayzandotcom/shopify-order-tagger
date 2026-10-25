@@ -9,7 +9,13 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
-import { RULE_CONDITIONS, describeCondition, validateRule } from "../rules";
+import {
+  MAX_RULES_PER_SHOP,
+  RULE_CONDITIONS,
+  describeCondition,
+  ruleLimitError,
+  validateRule,
+} from "../rules";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
@@ -57,6 +63,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return data<ActionResult>({ errors }, { status: 400 });
       }
 
+      const limitError = ruleLimitError(await db.rule.count({ where: { shop } }));
+      if (limitError) {
+        return data<ActionResult>({ errors: [limitError] }, { status: 400 });
+      }
+
       await db.rule.create({ data: { shop, ...rule } });
       return data<ActionResult>({ errors: [], created: true });
     }
@@ -84,9 +95,13 @@ export default function Rules() {
 
   return (
     <s-page heading="Rules">
-      <AddRuleSection />
+      <AddRuleSection atLimit={rules.length >= MAX_RULES_PER_SHOP} />
 
       <s-section heading="Your rules">
+        <s-paragraph>
+          {rules.length} of {MAX_RULES_PER_SHOP} rules used (enabled and
+          disabled rules both count).
+        </s-paragraph>
         {rules.length === 0 ? (
           <s-paragraph>
             No rules yet. Add one above, and new orders that match it will be
@@ -112,7 +127,7 @@ export default function Rules() {
   );
 }
 
-function AddRuleSection() {
+function AddRuleSection({ atLimit }: { atLimit: boolean }) {
   const fetcher = useFetcher<ActionResult>();
   const formRef = useRef<HTMLFormElement>(null);
   const shopify = useAppBridge();
@@ -134,6 +149,12 @@ function AddRuleSection() {
           {errors.length > 0 && (
             <s-banner heading="Couldn't add the rule" tone="critical">
               {errors.join(" ")}
+            </s-banner>
+          )}
+          {atLimit && (
+            <s-banner heading="Rule limit reached" tone="warning">
+              Your plan includes up to {MAX_RULES_PER_SHOP} rules. Delete a
+              rule to add a new one.
             </s-banner>
           )}
           <s-grid gridTemplateColumns="2fr 1fr 1fr auto" gap="base" alignItems="end">
@@ -162,6 +183,7 @@ function AddRuleSection() {
             <s-button
               type="submit"
               variant="primary"
+              disabled={atLimit}
               {...(isSubmitting ? { loading: true } : {})}
             >
               Add rule

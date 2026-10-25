@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  MAX_RULES_PER_SHOP,
   RULE_CONDITIONS,
   RULE_OPERATORS,
   describeCondition,
   evaluateRules,
+  ruleLimitError,
   validateRule,
   type EvaluableRule,
   type OrderFacts,
@@ -247,5 +249,21 @@ describe("describeCondition", () => {
     expect(describeCondition({ field: "customerEmail", operator: "eq", value: "x" })).toBe(
       "customerEmail eq x",
     );
+  });
+});
+
+describe("ruleLimitError", () => {
+  it("allows adding rules below the limit", () => {
+    expect(ruleLimitError(0)).toBeNull();
+    expect(ruleLimitError(MAX_RULES_PER_SHOP - 1)).toBeNull();
+  });
+
+  it("rejects the rule after the limit", () => {
+    expect(ruleLimitError(MAX_RULES_PER_SHOP)).toMatch(/limit of 100 rules/);
+    expect(ruleLimitError(MAX_RULES_PER_SHOP + 5)).not.toBeNull();
+  });
+
+  it("is 100 rules per shop", () => {
+    expect(MAX_RULES_PER_SHOP).toBe(100);
   });
 });
