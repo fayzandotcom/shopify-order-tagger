@@ -1,7 +1,5 @@
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { redirect, Form, useLoaderData } from "react-router";
-
-import { login } from "../../shopify.server";
+import { redirect } from "react-router";
 
 import styles from "./styles.module.css";
 
@@ -14,12 +12,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     throw redirect(`/app?${url.searchParams.toString()}`);
   }
 
-  return { showForm: Boolean(login) };
+  return null;
 };
 
+// Public landing page. Installation starts from Shopify, so there's no shop
+// domain form here (App Store requirement 2.3.1).
 export default function App() {
-  const { showForm } = useLoaderData<typeof loader>();
-
   return (
     <div className={styles.index}>
       <div className={styles.content}>
@@ -27,18 +25,10 @@ export default function App() {
         <p className={styles.text}>
           Tag new orders automatically, based on simple rules you set.
         </p>
-        {showForm && (
-          <Form className={styles.form} method="post" action="/auth/login">
-            <label className={styles.label}>
-              <span>Shop domain</span>
-              <input className={styles.input} type="text" name="shop" />
-              <span>e.g: my-shop-domain.myshopify.com</span>
-            </label>
-            <button className={styles.button} type="submit">
-              Log in
-            </button>
-          </Form>
-        )}
+        <p className={styles.text}>
+          Install Order Tagger from the Shopify App Store, then open it from
+          Apps in your Shopify admin.
+        </p>
         <ul className={styles.list}>
           <li>
             <strong>Simple rules</strong>. Tag orders by order total, product
