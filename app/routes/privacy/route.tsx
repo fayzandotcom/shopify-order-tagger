@@ -76,7 +76,8 @@ export default function Privacy() {
       <ul>
         <li>
           <strong>Shopify</strong>: the platform the app runs on. Shopify
-          sends the app store and order information.
+          sends the app store and order information, handles billing for the
+          app&apos;s plan, and tells us whether a store has an active plan.
         </li>
         <li>
           <strong>Render</strong>: hosts the app and its database in the
@@ -89,6 +90,13 @@ export default function Privacy() {
         <li>
           Rules and the tagging history are kept while the app is installed. A
           merchant can delete rules at any time in the app.
+        </li>
+        <li>
+          If a store doesn&apos;t have an active plan (for example, the free
+          trial ended without a subscription), the app stops tagging its
+          orders. We keep the store&apos;s rules and tagging history for 30
+          days, so they&apos;re still there if the merchant subscribes, and then
+          delete them manually.
         </li>
         <li>
           When a merchant uninstalls the app, Shopify asks us 48 hours later to
