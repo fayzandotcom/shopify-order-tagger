@@ -10,6 +10,17 @@ export const RULE_OPERATORS = {
   discountCode: ["eq"],
 } as const;
 
+// The Standard plan allows this many rules per shop, enabled or not (#28).
+export const MAX_RULES_PER_SHOP = 100;
+
+// Returns an error message when a shop that already has `ruleCount` rules
+// can't add another one, or null when it can.
+export function ruleLimitError(ruleCount: number): string | null {
+  return ruleCount >= MAX_RULES_PER_SHOP
+    ? `You've reached the limit of ${MAX_RULES_PER_SHOP} rules. Delete a rule to add a new one.`
+    : null;
+}
+
 export type RuleField = keyof typeof RULE_OPERATORS;
 export type RuleOperator = (typeof RULE_OPERATORS)[RuleField][number];
 
