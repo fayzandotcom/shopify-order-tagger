@@ -4,9 +4,20 @@ import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
 import { authenticate } from "../shopify.server";
+import { planSelectionUrlFor, shopHasActivePlan } from "../subscription.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin, redirect, session } = await authenticate.admin(request);
+
+  // Without an active Standard plan (or trial), send the merchant to Shopify's
+  // plan selection page. It's outside the app, so it needs target _top.
+  const planUrl = planSelectionUrlFor(session.shop);
+  if (
+    planUrl &&
+    !(await shopHasActivePlan(admin, session.shop, { allowCachedInactive: false }))
+  ) {
+    throw redirect(planUrl, { target: "_top" });
+  }
 
   // eslint-disable-next-line no-undef
   return { apiKey: process.env.SHOPIFY_API_KEY || "" };

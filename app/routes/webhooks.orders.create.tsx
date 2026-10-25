@@ -1,5 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
+import { shopHasActivePlan } from "../subscription.server";
 import { tagOrder } from "../tag-order.server";
 
 // The parts of the orders/create payload this app uses. The payload also
@@ -38,6 +39,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   // No admin context means the shop has no session, e.g. the app was uninstalled.
   if (!admin) {
     console.log(`Skipping ${order.name}: no session for ${shop}`);
+    return new Response();
+  }
+
+  // No tagging for shops without an active Standard plan (or trial). Their
+  // rules and history are kept; see the privacy policy.
+  if (!(await shopHasActivePlan(admin, shop, { allowCachedInactive: true }))) {
+    console.log(`Skipping ${order.name}: no active plan for ${shop}`);
     return new Response();
   }
 
