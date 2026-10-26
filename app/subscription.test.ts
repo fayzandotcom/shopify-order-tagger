@@ -1,5 +1,12 @@
-import { describe, expect, it, vi } from "vitest";
-import { billingConfig, createPlanChecker, planSelectionUrl } from "./subscription.server";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  PartnerApiError,
+  billingConfig,
+  checkBillingSetup,
+  createPlanChecker,
+  isConfigurationError,
+  planSelectionUrl,
+} from "./subscription.server";
 
 describe("billingConfig", () => {
   const full = {
@@ -80,5 +87,73 @@ describe("createPlanChecker", () => {
     expect(await check("shop", { allowCachedInactive: true })).toBe(true);
     expect(await check("shop", { allowCachedInactive: true })).toBe(false);
     expect(fetchActive).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("isConfigurationError", () => {
+  it("treats a rejected token or missing permission as a configuration error", () => {
+    expect(isConfigurationError(new PartnerApiError("x", 401, []))).toBe(true);
+    expect(isConfigurationError(new PartnerApiError("x", 403, []))).toBe(true);
+    // The Partner API can also answer 200 with a 401 code in the errors list.
+    expect(isConfigurationError(new PartnerApiError("x", 200, ["401"]))).toBe(true);
+  });
+
+  it("doesn't treat throttling, outages or other errors as configuration errors", () => {
+    expect(isConfigurationError(new PartnerApiError("x", 429, ["THROTTLED"]))).toBe(false);
+    expect(isConfigurationError(new PartnerApiError("x", 503, []))).toBe(false);
+    expect(isConfigurationError(new Error("network down"))).toBe(false);
+  });
+});
+
+describe("checkBillingSetup", () => {
+  const config = {
+    token: "token",
+    orgId: "130721303",
+    appId: "gid://shopify/App/436734230529",
+    appHandle: "order-tagger-69",
+  };
+
+  function mockPartnerApi(status: number, body: unknown) {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify(body), { status })),
+    );
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
+
+  it("says plan checks are off when the settings aren't set", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    await checkBillingSetup(null);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("Plan checks are off"));
+  });
+
+  it("logs OK when the token works and the app is found", async () => {
+    const log = vi.spyOn(console, "log").mockImplementation(() => {});
+    mockPartnerApi(200, { data: { app: { id: config.appId, name: "Order Tagger" } } });
+    await checkBillingSetup(config);
+    expect(log).toHaveBeenCalledWith(expect.stringContaining("Partner API access OK"));
+  });
+
+  it("logs a loud configuration error for an invalid token", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockPartnerApi(200, {
+      errors: [{ message: "Invalid access token", extensions: { code: "401" } }],
+    });
+    await checkBillingSetup(config);
+    expect(error).toHaveBeenCalledWith(
+      expect.stringContaining("EVERY SHOP CURRENTLY HAS FREE ACCESS"),
+      expect.any(PartnerApiError),
+    );
+  });
+
+  it("logs a loud configuration error when the app isn't in the organization", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockPartnerApi(200, { data: { app: null } });
+    await checkBillingSetup(config);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("wasn't found in Partner organization"));
   });
 });

@@ -57,13 +57,53 @@ export function createPlanChecker(fetchActive: FetchActive, now: () => number = 
       cache.set(shopId, { active, at: now() });
       return active;
     } catch (error) {
-      console.error("Couldn't check the shop's plan; allowing access", error);
+      if (isConfigurationError(error)) {
+        logConfigurationError(error);
+      } else {
+        console.error("[billing] Couldn't check the shop's plan; allowing access", error);
+      }
       return true;
     }
   };
 }
 
-async function fetchActiveSubscription(config: BillingConfig, shopId: string): Promise<boolean> {
+export class PartnerApiError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+    readonly codes: string[],
+  ) {
+    super(message);
+    this.name = "PartnerApiError";
+  }
+}
+
+// A rejected token (401) or missing permission (403) won't fix itself, unlike
+// throttling or an outage: every shop gets free access until the Render
+// settings are corrected.
+export function isConfigurationError(error: unknown): boolean {
+  if (!(error instanceof PartnerApiError)) return false;
+  return (
+    error.status === 401 ||
+    error.status === 403 ||
+    error.codes.some((code) => ["401", "403", "ACCESS_DENIED", "UNAUTHORIZED"].includes(code))
+  );
+}
+
+function logConfigurationError(error: unknown) {
+  console.error(
+    "[billing] CONFIGURATION ERROR: the Partner API rejected the request, so plan checks " +
+      "can't run and EVERY SHOP CURRENTLY HAS FREE ACCESS. Check SHOPIFY_PARTNER_API_ACCESS_TOKEN " +
+      "(a Partner API client with Manage apps), SHOPIFY_PARTNER_ORG_ID and SHOPIFY_APP_GID on Render.",
+    error,
+  );
+}
+
+async function partnerGraphql(
+  config: BillingConfig,
+  query: string,
+  variables: Record<string, unknown>,
+) {
   const response = await fetch(
     `https://partners.shopify.com/${config.orgId}/api/${PARTNER_API_VERSION}/graphql.json`,
     {
@@ -72,25 +112,74 @@ async function fetchActiveSubscription(config: BillingConfig, shopId: string): P
         "Content-Type": "application/json",
         "X-Shopify-Access-Token": config.token,
       },
-      body: JSON.stringify({
-        query: `query activeSubscription($appId: ID!, $shopId: ID!) {
-          activeSubscription(appId: $appId, shopId: $shopId) {
-            billingPeriod
-          }
-        }`,
-        variables: { appId: config.appId, shopId },
-      }),
+      body: JSON.stringify({ query, variables }),
     },
   );
-  const { data, errors } = await response.json();
-  if (!response.ok || errors) {
-    throw new Error(`Partner API request failed: ${JSON.stringify(errors ?? response.status)}`);
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok || body.errors) {
+    const codes: string[] = (body.errors ?? [])
+      .map((e: { extensions?: { code?: string } }) => e.extensions?.code)
+      .filter(Boolean);
+    throw new PartnerApiError(
+      `Partner API request failed: ${JSON.stringify(body.errors ?? response.status)}`,
+      response.status,
+      codes,
+    );
   }
+  return body.data;
+}
+
+async function fetchActiveSubscription(config: BillingConfig, shopId: string): Promise<boolean> {
+  const data = await partnerGraphql(
+    config,
+    `query activeSubscription($appId: ID!, $shopId: ID!) {
+      activeSubscription(appId: $appId, shopId: $shopId) {
+        billingPeriod
+      }
+    }`,
+    { appId: config.appId, shopId },
+  );
   // null means the shop has no active subscription (or trial) for the app.
   return data.activeSubscription !== null;
 }
 
+// Runs once when the server starts, so a bad token or app ID shows up in the
+// deploy logs right away instead of when a merchant opens the app.
+export async function checkBillingSetup(config: BillingConfig | null): Promise<void> {
+  if (!config) {
+    console.log("[billing] Plan checks are off (Partner API settings aren't set)");
+    return;
+  }
+  try {
+    const data = await partnerGraphql(
+      config,
+      `query billingSelfCheck($appId: ID!) {
+        app(id: $appId) {
+          id
+          name
+        }
+      }`,
+      { appId: config.appId },
+    );
+    if (!data.app) {
+      console.error(
+        `[billing] CONFIGURATION ERROR: app ${config.appId} wasn't found in Partner organization ` +
+          `${config.orgId}, so EVERY SHOP CURRENTLY HAS FREE ACCESS. Check SHOPIFY_APP_GID and SHOPIFY_PARTNER_ORG_ID on Render.`,
+      );
+      return;
+    }
+    console.log(`[billing] Partner API access OK (${data.app.name}); plan checks are on`);
+  } catch (error) {
+    if (isConfigurationError(error)) {
+      logConfigurationError(error);
+    } else {
+      console.error("[billing] Couldn't run the startup check against the Partner API", error);
+    }
+  }
+}
+
 const config = billingConfig();
+if (process.env.NODE_ENV !== "test") void checkBillingSetup(config);
 const checkPlan = config
   ? createPlanChecker((shopId) => fetchActiveSubscription(config, shopId))
   : null;
