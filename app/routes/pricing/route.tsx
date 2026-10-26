@@ -73,9 +73,19 @@ export default function Pricing() {
       <h2>Cancelling</h2>
       <p>
         To cancel, uninstall Order Tagger from Settings → Apps in your Shopify
-        admin. Shopify stops the subscription. 48 hours after you uninstall,
-        we delete all of your store&apos;s rules and tagging history. Tags
-        already added to your orders aren&apos;t removed.
+        admin. Shopify cancels the subscription at the end of your current
+        free trial or billing period. 48 hours after you uninstall, we delete
+        all of your store&apos;s rules and tagging history. Tags already added
+        to your orders aren&apos;t removed.
+      </p>
+
+      <h3>Reinstalling</h3>
+      <p>
+        If you reinstall Order Tagger before your free trial or billing period
+        ends, your Standard plan stays active until that date, so you
+        don&apos;t need to approve it again. After that date, Order Tagger
+        asks you to approve the Standard plan again. Reinstalling doesn&apos;t
+        start a new free trial.
       </p>
 
       <h2>Common questions</h2>
