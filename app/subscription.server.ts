@@ -142,12 +142,45 @@ async function fetchActiveSubscription(config: BillingConfig, shopId: string): P
     `query activeSubscription($appId: ID!, $shopId: ID!) {
       activeSubscription(appId: $appId, shopId: $shopId) {
         billingPeriod
+        cancelAtEndOfCycle
+        trialEndsAt
+        currentBillingCycle {
+          startTime
+          endTime
+        }
+        items {
+          handle
+        }
       }
     }`,
     { appId: config.appId, shopId },
   );
+  const subscription = data.activeSubscription;
+  // Logged on every fresh check (cached results aren't logged), so billing
+  // questions can be answered from the logs. No customer data.
+  console.log(`[billing] Plan check for ${shopId}: ${describeSubscription(subscription)}`);
   // null means the shop has no active subscription (or trial) for the app.
-  return data.activeSubscription !== null;
+  return subscription !== null;
+}
+
+interface SubscriptionSummary {
+  billingPeriod: string;
+  cancelAtEndOfCycle: boolean;
+  trialEndsAt: string | null;
+  currentBillingCycle: { startTime: string; endTime: string } | null;
+  items: { handle: string }[];
+}
+
+export function describeSubscription(subscription: SubscriptionSummary | null): string {
+  if (!subscription) return "no active subscription";
+  const plans = subscription.items.map((item) => item.handle).join(", ") || "none";
+  const parts = [
+    `active (plans: ${plans}, ${subscription.billingPeriod}`,
+    `cancelAtEndOfCycle: ${subscription.cancelAtEndOfCycle}`,
+    `trialEndsAt: ${subscription.trialEndsAt ?? "none"}`,
+    `cycleEnds: ${subscription.currentBillingCycle?.endTime ?? "none"})`,
+  ];
+  return parts.join(", ");
 }
 
 // The Partner API's app(id:) query wants gid://partners/App/<id>, while

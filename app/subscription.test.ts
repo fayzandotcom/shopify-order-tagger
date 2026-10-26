@@ -4,6 +4,7 @@ import {
   billingConfig,
   checkBillingSetup,
   createPlanChecker,
+  describeSubscription,
   isConfigurationError,
   planSelectionUrl,
   toPartnersAppGid,
@@ -180,5 +181,26 @@ describe("createPlanChecker forget", () => {
     check.forget("shop");
     expect(await check("shop", { allowCachedInactive: false })).toBe(false);
     expect(fetchActive).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("describeSubscription", () => {
+  it("summarizes an active subscription for the logs", () => {
+    expect(
+      describeSubscription({
+        billingPeriod: "EVERY_30_DAYS",
+        cancelAtEndOfCycle: true,
+        trialEndsAt: "2026-11-25T03:51:00Z",
+        currentBillingCycle: null,
+        items: [{ handle: "standard" }],
+      }),
+    ).toBe(
+      "active (plans: standard, EVERY_30_DAYS, cancelAtEndOfCycle: true, " +
+        "trialEndsAt: 2026-11-25T03:51:00Z, cycleEnds: none)",
+    );
+  });
+
+  it("says when there is no subscription", () => {
+    expect(describeSubscription(null)).toBe("no active subscription");
   });
 });
