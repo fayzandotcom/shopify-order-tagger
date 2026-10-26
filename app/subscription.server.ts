@@ -41,10 +41,10 @@ export function createPlanChecker(fetchActive: FetchActive, now: () => number = 
   const INACTIVE_TTL = 60 * 1000;
   const cache = new Map<string, { active: boolean; at: number }>();
 
-  return async function hasActivePlan(
+  const hasActivePlan = async (
     shopId: string,
     { allowCachedInactive }: { allowCachedInactive: boolean },
-  ): Promise<boolean> {
+  ): Promise<boolean> => {
     const cached = cache.get(shopId);
     if (cached) {
       const age = now() - cached.at;
@@ -65,6 +65,13 @@ export function createPlanChecker(fetchActive: FetchActive, now: () => number = 
       return true;
     }
   };
+
+  // Drops the cached status, e.g. on uninstall, so a reinstall asks Shopify again.
+  const forget = (shopId: string) => {
+    cache.delete(shopId);
+  };
+
+  return Object.assign(hasActivePlan, { forget });
 }
 
 export class PartnerApiError extends Error {
@@ -217,6 +224,14 @@ export async function shopHasActivePlan(
 ): Promise<boolean> {
   if (!checkPlan) return true;
   return checkPlan(await shopGid(admin, shop), { allowCachedInactive });
+}
+
+// Called on app/uninstalled: forget the shop's cached plan, so opening the app
+// after a reinstall checks with Shopify again instead of reusing "active".
+export function forgetShop(shop: string): void {
+  const shopId = shopIds.get(shop);
+  if (shopId) checkPlan?.forget(shopId);
+  shopIds.delete(shop);
 }
 
 // The plan selection page for a shop, or null when billing is off.
