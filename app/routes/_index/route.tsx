@@ -1,6 +1,7 @@
 import type { LoaderFunctionArgs, MetaFunction } from "react-router";
 import { redirect } from "react-router";
 
+import { COMPANY } from "../../company";
 import styles from "./styles.module.css";
 
 export const meta: MetaFunction = () => [{ title: "Order Tagger" }];
@@ -46,6 +47,9 @@ export default function App() {
         <p className={styles.text}>
           <a href="/pricing">Pricing and help</a> ·{" "}
           <a href="/privacy">Privacy policy</a>
+        </p>
+        <p>
+          Created and operated by <a href={COMPANY.url}>{COMPANY.name}</a>
         </p>
       </div>
     </div>

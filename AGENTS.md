@@ -10,7 +10,7 @@ Order Tagger is a proof of concept that tags new orders automatically. A merchan
 
 Rule conditions in v1 use three order fields only: order total, product tag, and discount code used.
 
-The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayzandotcom/projects/2) project, split into three milestones and tracked as GitHub issues.
+The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayzandotcom/projects/2) project, split into milestones and tracked as GitHub issues.
 
 ## Project rules
 

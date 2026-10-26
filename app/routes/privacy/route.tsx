@@ -1,12 +1,12 @@
 import type { MetaFunction } from "react-router";
 
+import { COMPANY } from "../../company";
 import styles from "./styles.module.css";
 
 // Public privacy policy, linked from the App Store listing. Keep it in sync
-// with what the app actually processes and stores (see AGENTS.md).
-const DEVELOPER = "Fayzan Siddiqui";
-const CONTACT_EMAIL = "fayzandotcom@hotmail.com";
-const EFFECTIVE_DATE = "October 25, 2026";
+// with what the app actually processes and stores (see AGENTS.md). Company and
+// contact details live in app/company.ts. Update the date when the policy changes.
+const EFFECTIVE_DATE = "October 26, 2026";
 
 export const meta: MetaFunction = () => [{ title: "Privacy policy · Order Tagger" }];
 
@@ -17,8 +17,9 @@ export default function Privacy() {
       <p className={styles.muted}>Effective {EFFECTIVE_DATE}</p>
 
       <p>
-        Order Tagger (&quot;the app&quot;) is a Shopify app developed and operated by {DEVELOPER}
-        (&quot;we&quot;, &quot;us&quot;). It adds tags to new orders in a
+        Order Tagger (&quot;the app&quot;) is a Shopify app created and operated
+        by <a href={COMPANY.url}>{COMPANY.name}</a> (&quot;we&quot;,
+        &quot;us&quot;). It adds tags to new orders in a
         merchant&apos;s Shopify store, based on rules the merchant creates. This
         policy explains what information the app processes, why, and how long
         it&apos;s kept.
@@ -133,7 +134,7 @@ export default function Privacy() {
       <h2>Contact</h2>
       <p>
         Questions about this policy or your data:{" "}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>
       </p>
     </main>
   );
