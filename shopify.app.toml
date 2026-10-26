@@ -3,7 +3,7 @@
 
 client_id = "cac2d21ff57d49b43885942dd28299b1"
 name = "Order Tagger"
-application_url = "https://shopify-order-tagger.onrender.com"
+application_url = "https://order-tagger-wq1z.onrender.com"
 embedded = true
 
 [access_scopes]
@@ -39,7 +39,7 @@ api_version = "2026-10"
   compliance_topics = [ "shop/redact" ]
 
 [auth]
-redirect_urls = [ "https://shopify-order-tagger.onrender.com/auth/callback" ]
+redirect_urls = [ "https://order-tagger-wq1z.onrender.com/auth/callback" ]
 
 [build]
 # Production URLs are fixed to Render; never repoint them to a dev tunnel.
