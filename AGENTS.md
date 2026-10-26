@@ -6,11 +6,11 @@ Use the [Shopify AI Toolkit](https://shopify.dev/docs/apps/build/ai-toolkit) for
 
 ## About this app
 
-Order Tagger is a proof of concept that tags new orders automatically. A merchant creates rules, each with one condition and one tag (for example, order total > 100 → `high-value`). When an order is created, the app checks it against the shop's rules and adds the tags from every rule that matches.
+Taggly is a proof of concept that tags new orders automatically. A merchant creates rules, each with one condition and one tag (for example, order total > 100 → `high-value`). When an order is created, the app checks it against the shop's rules and adds the tags from every rule that matches.
 
 Rule conditions in v1 use three order fields only: order total, product tag, and discount code used.
 
-The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayzandotcom/projects/2) project, split into milestones and tracked as GitHub issues.
+The work is planned in the [Taggly Roadmap](https://github.com/users/fayzandotcom/projects/2) project, split into milestones and tracked as GitHub issues.
 
 ## Project rules
 
@@ -23,8 +23,8 @@ The work is planned in the [Order Tagger Roadmap](https://github.com/users/fayza
 ### App configs
 
 - There are two Shopify apps, each with its own config file:
-  - `shopify.app.toml`: **production** (`order-tagger`, shown as "Order Tagger"). Used for `shopify app deploy` and the App Store.
-  - `shopify.app.dev.toml`: **development** (`order-tagger-dev`, shown as "Order Tagger Dev"). Used by `npm run dev`.
+  - `shopify.app.toml`: **production** (`order-tagger`, shown as "Taggly"). Used for `shopify app deploy` and the App Store.
+  - `shopify.app.dev.toml`: **development** (`order-tagger-dev`, shown as "Taggly Dev"). Used by `npm run dev`.
 - Never run `shopify app dev` against the production config. It repoints the production app at a local tunnel. `npm run dev` always passes `--config dev`.
 - Keep scopes, webhook subscriptions and `api_version` the same in both files. Only `client_id`, `name` and URLs differ.
 

@@ -1,4 +1,4 @@
-// Who runs Order Tagger and what the Standard plan costs, shown on the public
+// Who runs Taggly and what the Standard plan costs, shown on the public
 // pages (landing, pricing, privacy). The price must match the plan in the
 // Partner Dashboard (Shopify App Pricing).
 export const COMPANY = {

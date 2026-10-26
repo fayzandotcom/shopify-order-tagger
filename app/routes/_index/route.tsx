@@ -4,7 +4,7 @@ import { redirect } from "react-router";
 import { COMPANY } from "../../company";
 import styles from "./styles.module.css";
 
-export const meta: MetaFunction = () => [{ title: "Order Tagger" }];
+export const meta: MetaFunction = () => [{ title: "Taggly" }];
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
@@ -22,12 +22,12 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>Order Tagger</h1>
+        <h1 className={styles.heading}>Taggly</h1>
         <p className={styles.text}>
           Tag new orders automatically, based on simple rules you set.
         </p>
         <p className={styles.text}>
-          Install Order Tagger from the Shopify App Store, then open it from
+          Install Taggly from the Shopify App Store, then open it from
           Apps in your Shopify admin.
         </p>
         <ul className={styles.list}>

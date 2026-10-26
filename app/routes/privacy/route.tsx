@@ -8,16 +8,16 @@ import styles from "./styles.module.css";
 // contact details live in app/company.ts. Update the date when the policy changes.
 const EFFECTIVE_DATE = "October 26, 2026";
 
-export const meta: MetaFunction = () => [{ title: "Privacy policy · Order Tagger" }];
+export const meta: MetaFunction = () => [{ title: "Privacy policy · Taggly" }];
 
 export default function Privacy() {
   return (
     <main className={styles.page}>
-      <h1>Order Tagger privacy policy</h1>
+      <h1>Taggly privacy policy</h1>
       <p className={styles.muted}>Effective {EFFECTIVE_DATE}</p>
 
       <p>
-        Order Tagger (&quot;the app&quot;) is a Shopify app created and operated
+        Taggly (&quot;the app&quot;) is a Shopify app created and operated
         by <a href={COMPANY.url}>{COMPANY.name}</a> (&quot;we&quot;,
         &quot;us&quot;). It adds tags to new orders in a
         merchant&apos;s Shopify store, based on rules the merchant creates. This

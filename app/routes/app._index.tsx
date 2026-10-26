@@ -37,7 +37,7 @@ export default function Index() {
   const { orders } = useLoaderData<typeof loader>();
 
   return (
-    <s-page heading="Order Tagger">
+    <s-page heading="Taggly">
       <s-section heading="Recently tagged orders">
         {orders.length === 0 ? (
           <s-paragraph>
