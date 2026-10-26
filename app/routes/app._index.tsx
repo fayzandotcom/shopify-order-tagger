@@ -3,6 +3,7 @@ import { useLoaderData } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import { PolicyNotice } from "../components/PolicyNotice";
 
 interface MatchedRule {
   id: number;
@@ -80,6 +81,8 @@ export default function Index() {
           </s-table>
         )}
       </s-section>
+
+      <PolicyNotice />
     </s-page>
   );
 }

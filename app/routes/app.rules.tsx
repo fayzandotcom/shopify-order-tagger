@@ -9,6 +9,7 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
+import { PolicyNotice } from "../components/PolicyNotice";
 import {
   MAX_RULES_PER_SHOP,
   RULE_CONDITIONS,
@@ -123,6 +124,8 @@ export default function Rules() {
           </s-table>
         )}
       </s-section>
+
+      <PolicyNotice />
     </s-page>
   );
 }
