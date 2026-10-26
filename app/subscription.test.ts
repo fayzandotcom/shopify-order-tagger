@@ -169,3 +169,16 @@ describe("toPartnersAppGid", () => {
     );
   });
 });
+
+describe("createPlanChecker forget", () => {
+  it("drops a cached active plan, so the next check asks Shopify again", async () => {
+    const results = [true, false];
+    const fetchActive = vi.fn(async () => results.shift() ?? false);
+    const check = createPlanChecker(fetchActive, () => 0);
+
+    expect(await check("shop", { allowCachedInactive: false })).toBe(true);
+    check.forget("shop");
+    expect(await check("shop", { allowCachedInactive: false })).toBe(false);
+    expect(fetchActive).toHaveBeenCalledTimes(2);
+  });
+});
