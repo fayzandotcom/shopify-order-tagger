@@ -1,11 +1,12 @@
 import type { MetaFunction } from "react-router";
 
+import { COMPANY, STANDARD_PLAN } from "../../company";
 import styles from "./styles.module.css";
 
 // Public pricing and help page, linked from the App Store listing. Keep it in
 // sync with the plan in the Partner Dashboard (#28), the plan check (#47) and
-// the privacy policy.
-const CONTACT_EMAIL = "fayzandotcom@hotmail.com";
+// the privacy policy. The price and contact details live in app/company.ts.
+const { monthlyPriceUsd: PRICE, trialDays: TRIAL_DAYS } = STANDARD_PLAN;
 
 export const meta: MetaFunction = () => [{ title: "Pricing and help · Order Tagger" }];
 
@@ -16,7 +17,7 @@ export default function Pricing() {
 
       <h2>Standard plan</h2>
       <p className={styles.price}>
-        $20 USD per month, with a 30-day free trial
+        ${PRICE} USD per month, with a {TRIAL_DAYS}-day free trial
       </p>
       <ul>
         <li>Up to 100 tagging rules</li>
@@ -33,12 +34,12 @@ export default function Pricing() {
       <ul>
         <li>
           When you first open Order Tagger, Shopify asks you to approve the
-          Standard plan. Your 30-day free trial starts then.
+          Standard plan. Your {TRIAL_DAYS}-day free trial starts then.
         </li>
         <li>You aren&apos;t charged during the trial.</li>
         <li>
-          After 30 days, Shopify charges $20 per month until you uninstall the
-          app.
+          After {TRIAL_DAYS} days, Shopify charges ${PRICE} per month until you
+          uninstall the app.
         </li>
         <li>
           Shopify keeps track of trial days used, so reinstalling the app
@@ -108,7 +109,12 @@ export default function Pricing() {
       <h2>Help</h2>
       <p>
         Questions about pricing or using the app:{" "}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+        <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>
+      </p>
+
+      <p className={styles.footer}>
+        Order Tagger is created and operated by{" "}
+        <a href={COMPANY.url}>{COMPANY.name}</a>.
       </p>
     </main>
   );

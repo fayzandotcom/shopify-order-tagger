@@ -11,6 +11,11 @@
   margin-top: 2rem;
 }
 
+.footer {
+  margin-top: 3rem;
+  color: #6d7175;
+}
+
 .price {
   font-size: 1.25rem;
   font-weight: 600;
