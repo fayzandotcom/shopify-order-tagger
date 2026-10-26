@@ -2,7 +2,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "cac2d21ff57d49b43885942dd28299b1"
-name = "Order Tagger"
+name = "Taggly"
 application_url = "https://order-tagger-wq1z.onrender.com"
 embedded = true
 

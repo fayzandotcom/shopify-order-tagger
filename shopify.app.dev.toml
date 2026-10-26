@@ -3,7 +3,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "931c22c21ecf4d52b4fc84a35523c0d6"
-name = "Order Tagger Dev"
+name = "Taggly Dev"
 # Replaced with the tunnel URL while `shopify app dev` runs.
 application_url = "https://example.com"
 embedded = true

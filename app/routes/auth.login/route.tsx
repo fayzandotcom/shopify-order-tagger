@@ -16,9 +16,9 @@ export default function Auth() {
     <>
       <script src="https://cdn.shopify.com/shopifycloud/polaris.js" />
       <s-page>
-        <s-section heading="Open Order Tagger from Shopify">
+        <s-section heading="Open Taggly from Shopify">
           <s-paragraph>
-            Order Tagger runs inside your Shopify admin. Open it from Apps in
+            Taggly runs inside your Shopify admin. Open it from Apps in
             your admin, or install it from the Shopify App Store.
           </s-paragraph>
         </s-section>

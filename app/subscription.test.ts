@@ -135,7 +135,7 @@ describe("checkBillingSetup", () => {
 
   it("logs OK when the token works and the app is found", async () => {
     const log = vi.spyOn(console, "log").mockImplementation(() => {});
-    mockPartnerApi(200, { data: { app: { id: config.appId, name: "Order Tagger" } } });
+    mockPartnerApi(200, { data: { app: { id: config.appId, name: "Taggly" } } });
     await checkBillingSetup(config);
     expect(log).toHaveBeenCalledWith(expect.stringContaining("Partner API access OK"));
   });
