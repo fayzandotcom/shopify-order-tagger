@@ -86,6 +86,27 @@ export default function Privacy() {
         </li>
       </ul>
 
+      <h2>Roles</h2>
+      <p>
+        For the personal data in orders (for example, the order details of a
+        store&apos;s customers), the merchant is the data controller and
+        decides why that data is processed. {COMPANY.name} acts as a data
+        processor on the merchant&apos;s behalf and processes that data only to
+        provide Taggly, as described in this policy. For information about the
+        merchant&apos;s own store and account (such as the store&apos;s
+        domain), {COMPANY.name} is the controller.
+      </p>
+
+      <h2>Where data is processed</h2>
+      <p>
+        Taggly is hosted by our service provider Render, and its data is stored
+        and processed in the United States. If you&apos;re a merchant in the
+        European Economic Area, the United Kingdom or another region with rules
+        on international data transfers, contact us at{" "}
+        <a href={`mailto:${COMPANY.contactEmail}`}>{COMPANY.contactEmail}</a>.
+        We can provide a data processing agreement that covers these transfers.
+      </p>
+
       <h2>Retention and deletion</h2>
       <ul>
         <li>
