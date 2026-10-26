@@ -6,6 +6,7 @@ import {
   createPlanChecker,
   isConfigurationError,
   planSelectionUrl,
+  toPartnersAppGid,
 } from "./subscription.server";
 
 describe("billingConfig", () => {
@@ -155,5 +156,16 @@ describe("checkBillingSetup", () => {
     mockPartnerApi(200, { data: { app: null } });
     await checkBillingSetup(config);
     expect(error).toHaveBeenCalledWith(expect.stringContaining("wasn't found in Partner organization"));
+  });
+});
+
+describe("toPartnersAppGid", () => {
+  it("converts the app ID to the format the Partner API's app query expects", () => {
+    expect(toPartnersAppGid("gid://shopify/App/436734230529")).toBe(
+      "gid://partners/App/436734230529",
+    );
+    expect(toPartnersAppGid("gid://partners/App/436734230529")).toBe(
+      "gid://partners/App/436734230529",
+    );
   });
 });

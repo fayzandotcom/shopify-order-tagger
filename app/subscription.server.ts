@@ -143,6 +143,12 @@ async function fetchActiveSubscription(config: BillingConfig, shopId: string): P
   return data.activeSubscription !== null;
 }
 
+// The Partner API's app(id:) query wants gid://partners/App/<id>, while
+// activeSubscription takes gid://shopify/App/<id> (the SHOPIFY_APP_GID format).
+export function toPartnersAppGid(appGid: string): string {
+  return appGid.replace(/^gid:\/\/shopify\/App\//, "gid://partners/App/");
+}
+
 // Runs once when the server starts, so a bad token or app ID shows up in the
 // deploy logs right away instead of when a merchant opens the app.
 export async function checkBillingSetup(config: BillingConfig | null): Promise<void> {
@@ -159,7 +165,7 @@ export async function checkBillingSetup(config: BillingConfig | null): Promise<v
           name
         }
       }`,
-      { appId: config.appId },
+      { appId: toPartnersAppGid(config.appId) },
     );
     if (!data.app) {
       console.error(
