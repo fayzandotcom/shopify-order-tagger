@@ -1,5 +1,5 @@
 import type { HeadersFunction, LoaderFunctionArgs } from "react-router";
-import { Outlet, useLoaderData, useRouteError } from "react-router";
+import { isRouteErrorResponse, Outlet, useLoaderData, useRouteError } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
 import { AppProvider } from "@shopify/shopify-app-react-router/react";
 
@@ -38,8 +38,16 @@ export default function App() {
 }
 
 // Shopify needs React Router to catch some thrown responses, so that their headers are included in the response.
+// Same as boundary.error, but it checks the error with isRouteErrorResponse.
+// boundary.error checks the class name, which the production build shortens,
+// so redirects such as the one to the plan page flashed React Router's
+// default error page ("200") in the browser.
 export function ErrorBoundary() {
-  return boundary.error(useRouteError());
+  const error = useRouteError();
+  if (isRouteErrorResponse(error)) {
+    return <div dangerouslySetInnerHTML={{ __html: error.data || "Handling response" }} />;
+  }
+  throw error;
 }
 
 export const headers: HeadersFunction = (headersArgs) => {
