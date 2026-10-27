@@ -1,10 +1,12 @@
 import type { ActionFunctionArgs } from "react-router";
-import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { forgetShop } from "../subscription.server";
+import { verifyWebhook } from "../webhooks.server";
 
+// verifyWebhook, not authenticate.webhook: the shop's access token can't be
+// refreshed after an uninstall, so authenticate.webhook would answer 500 (#72).
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { shop, session, topic } = await authenticate.webhook(request);
+  const { shop, topic } = await verifyWebhook(request);
 
   console.log(`Received ${topic} webhook for ${shop}`);
 
@@ -13,10 +15,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   forgetShop(shop);
 
   // Webhook requests can trigger multiple times and after an app has already been uninstalled.
-  // If this webhook already ran, the session may have been deleted previously.
-  if (session) {
-    await db.session.deleteMany({ where: { shop } });
-  }
+  // deleteMany does nothing if the sessions were already deleted.
+  await db.session.deleteMany({ where: { shop } });
 
   return new Response();
 };
